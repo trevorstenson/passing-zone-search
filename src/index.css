@@ -1,4 +1,4 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -43,6 +43,72 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* Spacing scale for Tailwind v4 */
+  --spacing-0: 0px;
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-14: 3.5rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --spacing-32: 8rem;
+  --spacing-40: 10rem;
+  --spacing-48: 12rem;
+  --spacing-56: 14rem;
+  --spacing-64: 16rem;
+  
+  /* Color scale for Tailwind v4 */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  
+  /* Font weights for Tailwind v4 */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
 }
 
 :root {
@@ -114,11 +180,131 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Clean base styles that don't interfere with Tailwind */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
+  
+  html {
+    height: 100%;
+  }
+  
   body {
-    @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  #root {
+    height: 100%;
   }
 }
+
+/* Component-specific styles using @layer to ensure proper precedence */
+@layer components {
+  .app-container {
+    @apply min-h-screen;
+    background-color: #0f172a;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+}
+
+/* Force Dark Theme for Pattern Search App */
+html, body, #root {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Override any conflicting background colors */
+* {
+  box-sizing: border-box;
+}
+
+/* Force Tailwind utilities to work properly */
+@layer utilities {
+  .h-12 { height: var(--spacing-12) !important; }
+  .h-14 { height: var(--spacing-14) !important; }
+  .h-16 { height: var(--spacing-16) !important; }
+  
+  .text-blue-500 { color: var(--color-blue-500) !important; }
+  .text-gray-300 { color: var(--color-gray-300) !important; }
+  .text-gray-400 { color: var(--color-gray-400) !important; }
+  .text-gray-500 { color: var(--color-gray-500) !important; }
+  .text-gray-900 { color: var(--color-gray-900) !important; }
+  .text-white { color: var(--color-white) !important; }
+  .text-slate-300 { color: var(--color-slate-300) !important; }
+  .text-slate-400 { color: var(--color-slate-400) !important; }
+  .text-slate-500 { color: var(--color-slate-500) !important; }
+  
+  .bg-white { background-color: var(--color-white) !important; }
+  .bg-slate-600 { background-color: var(--color-slate-600) !important; }
+  .bg-slate-700 { background-color: var(--color-slate-700) !important; }
+  .bg-slate-800 { background-color: var(--color-slate-800) !important; }
+  .bg-slate-900 { background-color: var(--color-slate-900) !important; }
+  
+  .border-gray-300 { border-color: var(--color-gray-300) !important; }
+  .border-slate-500 { border-color: var(--color-slate-500) !important; }
+  .border-slate-600 { border-color: var(--color-slate-600) !important; }
+  .border-slate-700 { border-color: var(--color-slate-700) !important; }
+  
+  /* Hover utilities for card interactions */
+  .hover\:bg-slate-700:hover { background-color: var(--color-slate-700) !important; }
+  .hover\:bg-slate-600:hover { background-color: var(--color-slate-600) !important; }
+  .hover\:border-slate-600:hover { border-color: var(--color-slate-600) !important; }
+  .hover\:border-slate-500:hover { border-color: var(--color-slate-500) !important; }
+  .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important; }
+  .hover\:shadow-xl:hover { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important; }
+  
+  .placeholder-gray-400::placeholder { color: var(--color-gray-400) !important; }
+  
+  /* Ensure text colors work properly */
+  .text-gray-900 { color: var(--color-gray-900) !important; }
+  
+  /* Ensure input specific styles are applied */
+  input[type="text"] {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  }
+  
+  .font-thin { font-weight: var(--font-weight-thin) !important; }
+  .font-extralight { font-weight: var(--font-weight-extralight) !important; }
+  .font-light { font-weight: var(--font-weight-light) !important; }
+  .font-normal { font-weight: var(--font-weight-normal) !important; }
+  .font-medium { font-weight: var(--font-weight-medium) !important; }
+  .font-semibold { font-weight: var(--font-weight-semibold) !important; }
+  .font-bold { font-weight: var(--font-weight-bold) !important; }
+  .font-extrabold { font-weight: var(--font-weight-extrabold) !important; }
+  .font-black { font-weight: var(--font-weight-black) !important; }
+  
+  /* Mobile-first padding and spacing utilities */
+  .px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+  .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+  .px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
+  
+  /* Ensure full width usage on mobile */
+  .w-full { width: 100% !important; }
+  .max-w-none { max-width: none !important; }
+  
+  /* Force centering at all screen sizes */
+  .mx-auto { 
+    margin-left: auto !important; 
+    margin-right: auto !important; 
+  }
+  
+  /* Responsive max-width utilities for very narrow screens */
+  @media (max-width: 639px) {
+    .sm\:max-w-none { max-width: none !important; }
+  }
+}
+
+

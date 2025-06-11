@@ -3,6 +3,30 @@
 ## Error Log Format
 For each error, document:
 
+### [Dark Theme Not Applying]
+**Date:** 2025-01-27
+**Error Message:**
+```
+App showing light theme instead of dark theme, search results not visually separated
+```
+
+**Context:** User reported UI issues - app displaying light background, entries not clearly separated, search icon overlapping text
+**Root Cause:** Conflicting CSS from shadcn/ui components overriding dark theme styles
+**Solution:**
+1. Added inline styles with specific hex values to override theme conflicts
+2. Added global CSS overrides in index.css with !important declarations
+3. Enhanced visual separation between search result entries with better borders and spacing
+4. Fixed search input icon positioning with proper padding and flex layout
+5. Implemented true dark theme with slate-900 (#0f172a) background
+
+**Prevention:** Use inline styles for critical color values and add CSS overrides when working with component libraries
+**Related Files:** src/components/PatternSearch.tsx, src/index.css
+
+---
+
+## Error Log Format
+For each error, document:
+
 ### PostCSS Tailwind Plugin Error
 **Date:** 2025-01-27
 **Error Message:**

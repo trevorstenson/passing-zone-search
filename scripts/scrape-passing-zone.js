@@ -54,8 +54,13 @@ class PassingZoneScraper {
       url = url.startsWith('/') ? `https://passing.zone${url}` : `https://passing.zone/${url}`;
     }
 
-    // Extract excerpt/description
-    const excerpt = $article.find('.entry-content, .excerpt, p').first().text().trim();
+    // Extract excerpt/description and clean it
+    let excerpt = $article.find('.entry-content, .excerpt, p').first().text().trim();
+    
+    // Clean excerpt from UI elements
+    excerpt = excerpt.replace(/\s*see more\s*$/i, '').trim();
+    excerpt = excerpt.replace(/\s*read more\s*$/i, '').trim();
+    excerpt = excerpt.replace(/\s*continue reading\s*$/i, '').trim();
     
     // Extract author
     const author = $article.find('.author, .by-author, [class*="author"]').text().trim() ||
@@ -78,7 +83,26 @@ class PassingZoneScraper {
     const tags = [];
     $article.find('a[href*="/tag/"], .tags a, [class*="tag"] a').each((i, el) => {
       const tag = $(el).text().trim();
-      if (tag && !tags.includes(tag)) {
+      // Filter out UI elements and common non-tag text
+      const excludePatterns = [
+        /^see more$/i,
+        /^read more$/i,
+        /^continue reading$/i,
+        /^more$/i,
+        /^next$/i,
+        /^previous$/i,
+        /^home$/i,
+        /^contact$/i,
+        /^about$/i,
+        /^menu$/i,
+        /^search$/i,
+        /^\d+$/,  // pure numbers
+        /^[\s\W]*$/  // only whitespace/punctuation
+      ];
+      
+      const shouldExclude = excludePatterns.some(pattern => pattern.test(tag));
+      
+      if (tag && !tags.includes(tag) && !shouldExclude && tag.length > 1) {
         tags.push(tag);
       }
     });
@@ -269,25 +293,54 @@ class PassingZoneScraper {
       else if (allTerms.includes('advanced')) difficulty = 'Advanced';
       else if (allTerms.includes('expert')) difficulty = 'Expert';
 
+      // Filter out unwanted tags and categories
+      const cleanTags = pattern.tags.filter(tag => {
+        const excludePatterns = [
+          /^see more$/i,
+          /^read more$/i,
+          /^continue reading$/i,
+          /^more$/i,
+          /^next$/i,
+          /^previous$/i
+        ];
+        return !excludePatterns.some(pattern => pattern.test(tag)) && tag.length > 1;
+      });
+      
+      const cleanCategories = pattern.categories.filter(cat => {
+        const excludePatterns = [
+          /^see more$/i,
+          /^read more$/i,
+          /^continue reading$/i,
+          /^more$/i
+        ];
+        return !excludePatterns.some(pattern => pattern.test(cat)) && cat.length > 1;
+      });
+
+      // Clean excerpt and description from UI elements
+      let cleanExcerpt = pattern.excerpt || '';
+      cleanExcerpt = cleanExcerpt.replace(/\s*see more\s*$/i, '').trim();
+      cleanExcerpt = cleanExcerpt.replace(/\s*read more\s*$/i, '').trim();
+      cleanExcerpt = cleanExcerpt.replace(/\s*continue reading\s*$/i, '').trim();
+
       // Create searchable content
       const searchableContent = [
         pattern.title,
-        pattern.excerpt,
-        ...pattern.tags,
-        ...pattern.categories,
+        cleanExcerpt,
+        ...cleanTags,
+        ...cleanCategories,
         pattern.author
       ].filter(Boolean).join(' ').toLowerCase();
 
       processed.push({
         id: pattern.url.split('/').filter(Boolean).pop() || `pattern-${processed.length}`,
         title: pattern.title,
-        description: pattern.excerpt,
-        excerpt: pattern.excerpt,
+        description: cleanExcerpt,
+        excerpt: cleanExcerpt,
         url: pattern.url,
         author: pattern.author,
         publishedDate: pattern.date,
-        categories: pattern.categories,
-        tags: pattern.tags,
+        categories: cleanCategories,
+        tags: cleanTags,
         jugglerCount: jugglerCount,
         difficulty: difficulty,
         patternType: patternType,

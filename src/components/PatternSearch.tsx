@@ -1,10 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import Fuse from 'fuse.js';
 import type { JugglingPattern } from '../types/Pattern';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Search, ExternalLink } from 'lucide-react';
 
 interface PatternSearchProps {
@@ -19,6 +17,7 @@ interface SearchResult {
 export function PatternSearch({ patterns }: PatternSearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   // Configure Fuse.js for optimal fuzzy search
   const fuse = useMemo(() => {
@@ -31,7 +30,7 @@ export function PatternSearch({ patterns }: PatternSearchProps) {
         { name: 'categories', weight: 0.05 },
         { name: 'author', weight: 0.05 }
       ],
-      threshold: 0.3, // Adjust fuzziness (0 = exact match, 1 = very fuzzy)
+      threshold: 0.3,
       includeScore: true,
       minMatchCharLength: 2,
     });
@@ -45,169 +44,153 @@ export function PatternSearch({ patterns }: PatternSearchProps) {
       const searchResults = fuse.search(query);
       setResults(searchResults);
     }
+    setSelectedIndex(-1);
   }, [query, fuse, patterns]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (results.length === 0) return;
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setSelectedIndex((prev) => (prev + 1) % results.length);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (results[selectedIndex]) {
+            handlePatternClick(results[selectedIndex].item.url);
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [results, selectedIndex]);
 
   const handlePatternClick = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
-  const truncateDescription = (description: string, maxLength: number = 150) => {
-    if (description.length <= maxLength) return description;
-    return description.slice(0, maxLength).trim() + '...';
-  };
-
   return (
-    <div className="container mx-auto max-w-4xl p-4 space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Passing Zone Pattern Search
-        </h1>
-        <p className="text-muted-foreground">
-          Find juggling patterns with smart fuzzy search - typos welcome!
-        </p>
-      </div>
+    <div className="app-container">
+      <div className="w-full max-w-none sm:max-w-none md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 sm:py-8 lg:py-12">
+        {/* Header */}
+        <div className="text-center mb-6 sm:mb-8 lg:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 lg:mb-4 leading-tight">
+            Passing Zone Pattern Search
+          </h1>
+          {/* <p className="text-slate-400 text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto px-2 sm:px-0">
+            Find juggling patterns with smart fuzzy search - typos welcome!
+          </p> */}
+        </div>
 
-      {/* Search Input */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search patterns... (e.g., 'choclate bar', '3 cout', 'typewritr')"
-          className="pl-10"
-        />
-      </div>
+        {/* Search Input - Mobile-First Responsive with Inter Font */}
+        <div className="w-full sm:max-w-lg md:max-w-2xl lg:w-2/3 xl:w-2/3 mx-auto mb-4 sm:mb-8">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 sm:pl-5 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
+            </div>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search patterns..."
+              className="w-full h-12 sm:h-14 lg:h-16 pl-12 sm:pl-14 pr-4 sm:pr-6 py-3 sm:py-4 text-base sm:text-lg font-medium bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg shadow-sm focus:outline-none"
+              style={{ 
+                fontFamily: 'Inter, system-ui, sans-serif'
+              }}
+            />
+          </div>
+        </div>
 
-      {/* Search Stats */}
-      <div className="flex items-center justify-between">
-        <Badge variant="secondary">
-          {query.trim() === '' 
-            ? `Showing all ${patterns.length} patterns`
-            : `Found ${results.length} patterns matching "${query}"`
-          }
-        </Badge>
-      </div>
+        {/* Search Stats */}
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-slate-800 rounded-full border border-slate-700">
+            <span className="text-slate-300 text-xs sm:text-sm">
+              {query.trim() === '' 
+                ? `Showing all ${patterns.length} patterns`
+                : `Found ${results.length} patterns matching "${query}"`
+              }
+            </span>
+          </div>
+        </div>
 
-      {/* Results */}
-      <div className="space-y-4">
-        {results.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="text-muted-foreground mb-2">
+        {/* Results - Mobile-Friendly Cards */}
+        <div className="space-y-2 sm:space-y-3 md:space-y-4">
+          {results.length === 0 ? (
+            <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 sm:p-8 text-center" style={{ backgroundColor: '#1e293b', borderColor: '#475569' }}>
+              <div className="text-slate-300 text-base sm:text-lg mb-2">
                 No patterns found for "{query}"
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-slate-400 text-sm sm:text-base">
                 Try a different search term or check for typos
               </p>
-            </CardContent>
-          </Card>
-        ) : (
-          results.map(({ item, score }) => (
-            <Card
-              key={item.id}
-              className="transition-all hover:shadow-md cursor-pointer"
-              onClick={() => handlePatternClick(item.url)}
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-1 flex-1">
-                    <CardTitle className="text-lg hover:text-primary transition-colors">
+            </div>
+          ) : (
+            results.map(({ item }, index) => (
+              <div
+                key={item.id}
+                className={`group rounded-lg sm:rounded-xl pt-2 pb-3 px-3 sm:pt-3 sm:pb-4 sm:px-4 cursor-pointer transition-all duration-200 border touch-manipulation ${
+                  index === selectedIndex 
+                    ? 'bg-slate-700 border-slate-500 shadow-lg' 
+                    : 'bg-slate-800 hover:bg-slate-600 border-slate-700 hover:border-slate-500 hover:shadow-xl'
+                }`}
+                style={{ 
+                  backgroundColor: index === selectedIndex ? '#334155' : '#1e293b',
+                  borderColor: index === selectedIndex ? '#64748b' : '#475569'
+                }}
+                onClick={() => handlePatternClick(item.url)}
+              >
+                <div className="flex items-start justify-between gap-2 sm:gap-3 md:gap-4">
+                  <div className="flex-1 min-w-0">
+                    {/* Title */}
+                    <h3 className="text-sm sm:text-base md:text-lg font-semibold text-white group-hover:text-blue-300 mt-1 transition-colors duration-200 mb-1 sm:mb-2 leading-tight break-words">
                       {item.title}
-                    </CardTitle>
-                    {item.description && (
-                      <CardDescription>
-                        {truncateDescription(item.description)}
-                      </CardDescription>
+                    </h3>
+                    
+                    {/* Tags */}
+                    {item.tags && item.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 sm:gap-1.5 overflow-hidden">
+                        {item.tags.slice(0, 6).map((tag, tagIndex) => (
+                          <Badge
+                            key={tagIndex}
+                            variant="secondary"
+                            className="text-xs bg-slate-900 text-slate-400 hover:bg-slate-700 transition-colors border-slate-700 max-w-28 sm:max-w-48 md:max-w-none truncate"
+                            style={{ backgroundColor: '#0f172a', color: '#94a3b8', borderColor: '#475569' }}
+                            title={`#${tag}`}
+                          >
+                            #{tag}
+                          </Badge>
+                        ))}
+                        {item.tags.length > 6 && (
+                          <Badge 
+                            variant="secondary" 
+                            className="text-xs bg-slate-900 text-slate-400 border-slate-700 flex-shrink-0"
+                            style={{ backgroundColor: '#0f172a', color: '#94a3b8', borderColor: '#475569' }}
+                          >
+                            +{item.tags.length - 6} more
+                          </Badge>
+                        )}
+                      </div>
                     )}
                   </div>
-                  {score && (
-                    <Badge variant="outline" className="flex-shrink-0">
-                      {Math.round((1 - score) * 100)}% match
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-3">
-                {/* Pattern Details */}
-                <div className="flex flex-wrap gap-2">
-                  {item.difficulty && (
-                    <Badge>
-                      {item.difficulty}
-                    </Badge>
-                  )}
-                  {item.jugglerCount && (
-                    <Badge variant="secondary">
-                      {item.jugglerCount} juggler{item.jugglerCount > 1 ? 's' : ''}
-                    </Badge>
-                  )}
-                  {item.patternType && (
-                    <Badge variant="outline">
-                      {item.patternType}
-                    </Badge>
-                  )}
-                  {item.author && (
-                    <Badge variant="secondary">
-                      by {item.author}
-                    </Badge>
-                  )}
-                </div>
-                
-                {/* Categories */}
-                {item.categories && item.categories.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {item.categories.map((category, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="text-xs"
-                      >
-                        {category}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-                
-                {/* Tags */}
-                {item.tags && item.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {item.tags.slice(0, 8).map((tag, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="text-xs"
-                      >
-                        #{tag}
-                      </Badge>
-                    ))}
-                    {item.tags.length > 8 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{item.tags.length - 8} more
-                      </Badge>
-                    )}
-                  </div>
-                )}
 
-                {/* Action Button */}
-                <div className="pt-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePatternClick(item.url);
-                    }}
-                  >
-                    View Pattern
-                    <ExternalLink className="ml-2 h-3 w-3" />
-                  </Button>
+                                    {/* Action Icon */}
+                  <div className="flex-shrink-0 mt-0.5">
+                    <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 group-hover:text-slate-300 transition-colors duration-200" />
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
