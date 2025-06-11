@@ -4,52 +4,57 @@ import type { JugglingPattern } from '../types/Pattern';
 export const samplePatterns: JugglingPattern[] = [
   {
     id: '1',
-    title: 'Basic 3-Count',
-    description: 'The most fundamental passing pattern',
-    category: 'Passing Patterns',
-    tags: ['basic', 'beginner', '3-count'],
-    url: 'https://passing.zone/patterns/basic-3-count',
-    difficulty: 'Beginner',
-    jugglers: 2
+    title: '3-3-10',
+    description: 'Basic three-count passing pattern for two jugglers using ten clubs.',
+    url: 'https://passing.zone/pattern/3-3-10',
+    author: 'Unknown',
+    tags: ['3-count', 'beginner', 'clubs'],
+    categories: ['Passing Patterns'],
+    jugglerCount: 2,
+    difficulty: 'Beginner'
   },
   {
     id: '2',
-    title: 'Chocolate Bar',
-    description: 'A fun two-person pattern with crossing throws',
-    category: 'Passing Patterns',
-    tags: ['intermediate', 'chocolate', 'crossing'],
-    url: 'https://passing.zone/patterns/chocolate-bar',
-    difficulty: 'Intermediate',
-    jugglers: 2
+    title: '6-count',
+    description: 'Six count passing pattern - every right hand is a pass.',
+    url: 'https://passing.zone/pattern/6-count',
+    author: 'Unknown',
+    tags: ['6-count', 'beginner', 'clubs'],
+    categories: ['Passing Patterns'],
+    jugglerCount: 2,
+    difficulty: 'Beginner'
   },
   {
     id: '3',
     title: 'Why Not',
-    description: 'A classic 3-person pattern',
-    category: 'Passing Patterns',
-    tags: ['3-person', 'classic', 'why-not'],
-    url: 'https://passing.zone/patterns/why-not',
-    difficulty: 'Advanced',
-    jugglers: 3
+    description: 'Advanced seven club passing pattern with various heights.',
+    url: 'https://passing.zone/pattern/why-not',
+    author: 'Martin Frost',
+    tags: ['7-club', 'advanced', 'manipulation'],
+    categories: ['Passing Patterns'],
+    jugglerCount: 2,
+    difficulty: 'Advanced'
   },
   {
     id: '4',
-    title: 'Typewriter',
-    description: 'Sequential pattern that looks like typing',
-    category: 'Passing Patterns',
-    tags: ['sequential', 'typewriter', 'visual'],
-    url: 'https://passing.zone/patterns/typewriter',
-    difficulty: 'Intermediate',
-    jugglers: 2
+    title: 'Funky Bookends',
+    description: 'Creative pattern with unusual timing and feeds.',
+    url: 'https://passing.zone/pattern/funky-bookends',
+    author: 'Aidan Burns',
+    tags: ['funky', 'bookends', 'intermediate'],
+    categories: ['Passing Patterns'],
+    jugglerCount: 3,
+    difficulty: 'Intermediate'
   },
   {
     id: '5',
-    title: 'Martin\'s One-Count',
-    description: 'Every throw is a pass in this intense pattern',
-    category: 'Passing Patterns',
-    tags: ['1-count', 'intense', 'advanced'],
-    url: 'https://passing.zone/patterns/martins-one-count',
-    difficulty: 'Expert',
-    jugglers: 2
+    title: 'Beast',
+    description: 'Very difficult synchronous passing pattern for experienced jugglers.',
+    url: 'https://passing.zone/pattern/beast',
+    author: 'Unknown',
+    tags: ['sync', 'difficult', 'beast'],
+    categories: ['Passing Patterns'],
+    jugglerCount: 2,
+    difficulty: 'Expert'
   }
 ]; 

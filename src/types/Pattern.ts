@@ -15,8 +15,8 @@ export interface JugglingPattern {
   tags: string[]; // e.g., ["manipulation", "scrambled", "beginner"]
   
   // Pattern specifics
-  jugglerCount?: number; // Number of jugglers (extracted from categories)
-  difficulty?: string; // Derived from tags or content
+  jugglerCount?: number | null; // Number of jugglers (extracted from categories)
+  difficulty?: string | null; // Derived from tags or content
   patternType?: string; // e.g., "manipulation", "siteswap", "roundabout"
   
   // Search optimization
